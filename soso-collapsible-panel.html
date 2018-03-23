@@ -1,0 +1,99 @@
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../soso-icon/soso-icon.html">
+
+<dom-module id="soso-collapsible-panel">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      label {
+        display: inline;
+        cursor: pointer;
+      }
+
+      label soso-icon {
+        vertical-align: middle;
+        width: 1.8em;
+        height: 1.8em;
+      }
+
+      label span {
+        vertical-align: middle;
+      }
+
+      #container {
+        height: 0px;
+        overflow: hidden;
+        transition: height 0.5s ease;
+      }
+    </style>
+    <div class="header">
+      <label on-click="_toggle">
+        <soso-icon icon="[[icon]]" icon-map="[[iconMap]]"></soso-icon>
+        <span>[[label]]</span>
+      </label>
+    </div>
+    <div id="container">
+      <div id="content">
+        <slot></slot>
+      </div>
+    </div>
+  </template>
+
+  <script>
+    class SosoCollapsiblePanel extends Polymer.Element {
+      static get is() { return 'soso-collapsible-panel'; }
+      static get properties() {
+        return {
+          iconMap: {
+            type: Object,
+            value: () => {
+              return {
+                "right": "M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z",
+                "down": "M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"
+              };
+            }
+          },
+          icon: {
+            type: String,
+            value: 'right'
+          },
+          label: String,
+          collapsed: {
+            type: Boolean,
+            value: false,
+            observer: '_collapseChnaged'
+          }
+        };
+      }
+
+      _toggle() {
+        this.set("collapsed", !this.collapsed);
+      }
+
+      _collapseChnaged() {
+        if (this.collapsed) {
+          this.icon = 'right';
+          this.$.container.style.height = (this.$.content.offsetHeight) + 'px';
+          setTimeout(() => {
+            if (this.collapsed) {
+              this.$.container.style.height = "0px";
+            }
+          }, 100);
+        } else {
+          this.icon = 'down';
+          this.$.container.style.height = (this.$.content.offsetHeight) + 'px';
+          setTimeout(() => {
+            if (!this.collapsed) {
+              this.$.container.style.height = 'auto';
+            }
+          }, 500);
+        }
+      }
+    }
+
+    window.customElements.define(SosoCollapsiblePanel.is, SosoCollapsiblePanel);
+  </script>
+</dom-module>
